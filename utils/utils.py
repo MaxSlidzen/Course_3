@@ -8,9 +8,13 @@ def get_transactions_list(path):
 
 
 def get_executed_transactions(transactions):
-    executed_transactions = [transaction for transaction in transactions if 'EXECUTED' in transaction.values()]
-    # executed_transactions = [transaction for transaction in transactions if transaction['state'] == 'EXECUTED']
-
+    executed_transactions = []
+    for transaction in transactions:
+        try:
+            if transaction['state'] == 'EXECUTED':
+                executed_transactions.append(transaction)
+        except KeyError:
+            continue
     return executed_transactions
 
 
