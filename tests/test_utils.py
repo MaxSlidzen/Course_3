@@ -3,22 +3,19 @@ import pytest
 import os.path
 
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 def test_get_transactions_list():
-    json_path = os.path.abspath('tests/test.json')
+    if os.path.exists('test.json'):
+        json_path = 'test.json'
+    else:
+        json_path = 'tests/test.json'
+
     assert utils.get_transactions_list(json_path) == [
         {
             "id": 441945886,
             "state": "EXECUTED",
             "date": "2019-08-26T10:50:58.294041"
         },
-        [
-            1,
-            2,
-            3,
-            4,
-            5
-        ],
+        [1, 2, 3, 4, 5],
         "Элемент списка",
         True,
         56.6,
@@ -59,13 +56,6 @@ def test_get_sorted_transactions_by_date():
                         "id": 441945886,
                         "state": "EXECUTED",
                         "date": "2019-12-01",
-                        "operationAmount": {
-                            "amount": "31957.58",
-                            "currency": {
-                                "name": "руб.",
-                                "code": "RUB"
-                            }
-                        },
                         "description": "Перевод организации",
                         "from": "Maestro 1596837868705199",
                         "to": "Счет 64686473678894779589"
@@ -166,6 +156,3 @@ def test_to_output():
                                             "2019-07-03T18:35:29.512364 Перевод организации\n" \
                                             " -> Счет 35383033474447895560\n" \
                                             "8221.37 USD\n"
-
-
-
