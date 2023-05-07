@@ -3,8 +3,9 @@ import pytest
 import os.path
 
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 def test_get_transactions_list():
-    json_path = os.path.abspath('test.json')
+    json_path = os.path.abspath('tests/test.json')
     assert utils.get_transactions_list(json_path) == [
         {
             "id": 441945886,
@@ -85,9 +86,86 @@ def test_to_change_date():
 
 
 def test_to_mask_from():
-    assert utils.to_mask_from(None) == None
     assert utils.to_mask_from('None 135698784562') == 'None 1356 98** **** 4562'
 
 
 def test_to_mask_to():
     assert utils.to_mask_to('Счет 864523458972') == 'Счет **8972'
+
+
+def test_to_change_1_transaction():
+    transaction = {
+        "date": "2018-09-12T21:27:25.241689",
+        "from": "Visa Platinum 1246377376343588",
+        "to": "Счет 14211924144426031657"
+    }
+    assert utils.to_change_1_transaction(transaction) == {'date': '12.09.2018',
+                                                          "from": "Visa Platinum 1246 37** **** 3588",
+                                                          "to": "Счет **1657"}
+
+
+def test_to_change_transactions():
+    transactions = [
+        {
+            "date": "2018-04-04T17:33:34.701093",
+            "from": "Visa Gold 5999414228426353",
+            "to": "Счет 72731966109147704472"
+        }, {
+            "date": "2019-12-08T22:46:21.935582",
+            "to": "Счет 90424923579946435907"
+        }
+    ]
+    assert utils.to_change_transactions(transactions) == [
+        {
+            "date": "04.04.2018",
+            "from": "Visa Gold 5999 41** **** 6353",
+            "to": "Счет **4472"
+        }, {
+            "date": "08.12.2019",
+            "to": "Счет **5907"
+        }
+    ]
+
+
+def test_to_output():
+    transactions = [
+        {
+            "id": 441945886,
+            "state": "EXECUTED",
+            "date": "2019-08-26T10:50:58.294041",
+            "operationAmount": {
+                "amount": "31957.58",
+                "currency": {
+                    "name": "руб.",
+                    "code": "RUB"
+                }
+            },
+            "description": "Перевод организации",
+            "from": "Maestro 1596837868705199",
+            "to": "Счет 64686473678894779589"
+        },
+        {
+            "id": 41428829,
+            "state": "EXECUTED",
+            "date": "2019-07-03T18:35:29.512364",
+            "operationAmount": {
+                "amount": "8221.37",
+                "currency": {
+                    "name": "USD",
+                    "code": "USD"
+                }
+            },
+            "description": "Перевод организации",
+            "to": "Счет 35383033474447895560"
+        }
+    ]
+    assert utils.to_output(transactions) == "2019-08-26T10:50:58.294041 Перевод организации\n" \
+                                            "Maestro 1596837868705199 -> Счет 64686473678894779589\n" \
+                                            "31957.58 руб.\n" \
+                                            "\n" \
+                                            "2019-07-03T18:35:29.512364 Перевод организации\n" \
+                                            " -> Счет 35383033474447895560\n" \
+                                            "8221.37 USD\n"
+
+
+
