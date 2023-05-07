@@ -11,6 +11,7 @@ def main():
     last_5_executed_transactions = utils.get_sorted_transactions_by_date(last_5_dates, executed_transaction)
     changed_transactions = utils.to_change_transactions(last_5_executed_transactions)
     last_5 = utils.to_output(changed_transactions)
+
     return last_5
 
 

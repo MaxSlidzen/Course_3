@@ -85,13 +85,10 @@ def to_change_date(date):
 
 def to_mask_from(string):
     """
-    Маскировка счета отправителя, если такой счет есть
+    Маскировка счета отправителя
     :param string: исходный счет отправителя, str
     :return: замаскированный счет отправителя, str
     """
-    # Учитываем случаи без счета отправителя
-    if string is None:
-        return None
 
     account = string.split(' ')
     number = account[len(account) - 1]
@@ -112,6 +109,17 @@ def to_mask_to(string):
     return f'{" ".join(string.split(" ")[0:-1])} {masked_account}'
 
 
+def to_change_1_transaction(transaction):
+    transaction['date'] = to_change_date(transaction['date'])
+    transaction['to'] = to_mask_to(transaction['to'])
+
+    # Учитываем случаи без счета отправителя
+    if 'from' in transaction:
+        transaction['from'] = to_mask_from(transaction['from'])
+
+        return transaction
+
+
 def to_change_transactions(transactions):
     """
     Изменение даты и маскировка счетов отправителя и получателя в списке операций
@@ -119,12 +127,7 @@ def to_change_transactions(transactions):
     :return: список форматированных операций
     """
     for transaction in transactions:
-        transaction['date'] = to_change_date(transaction['date'])
-        transaction['to'] = to_mask_to(transaction['to'])
-
-        # Учитываем случаи без счета отправителя
-        if 'from' in transaction:
-            transaction['from'] = to_mask_from(transaction['from'])
+        to_change_1_transaction(transaction)
 
     return transactions
 
